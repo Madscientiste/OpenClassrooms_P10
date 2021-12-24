@@ -1,0 +1,21 @@
+[
+	{
+		"username": "jeffrey07",
+		"email": "jasonwilliamson@example.com",
+		"first_name": "Robin",
+		"last_name": "Branch",
+		"auth": {
+			"refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY0MDM2ODQ4NywiaWF0IjoxNjQwMjgyMDg3LCJqdGkiOiI4MGYzYWFlYjYzYWE0MzQ2YmViNTUzYjFkZGI3ZjQ1ZiIsInVzZXJfaWQiOjIxfQ.0FXISeYzGIwj619vEl_ooKMv5BOusZXXunxnEobUQp0",
+			"access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQwMjgyMzg3LCJpYXQiOjE2NDAyODIwODcsImp0aSI6ImVlYTE3NTE0MTU3ZDQ0NDA5ODFlMGYzYWI3Y2NjOGJkIiwidXNlcl9pZCI6MjF9.D-cMnKkFtjLI8nBk0eCu2x4Ph75Hvw4wARGYzAYhFPA"
+		}
+	},
+	{ "username": "ibarker", "email": "woodwardjessica@example.net", "first_name": "Randall", "last_name": "Martinez" },
+	{ "username": "robertreynolds", "email": "kenneth87@example.org", "first_name": "Brett", "last_name": "Kelley" },
+	{ "username": "vfletcher", "email": "meyerderek@example.net", "first_name": "Walter", "last_name": "Martin" },
+	{ "username": "lmartin", "email": "katelynknight@example.com", "first_name": "Susan", "last_name": "Villa" },
+	{ "username": "angela07", "email": "anthony80@example.net", "first_name": "Sara", "last_name": "Williams" },
+	{ "username": "scollins", "email": "michael32@example.com", "first_name": "Lisa", "last_name": "Martinez" },
+	{ "username": "matthewrogers", "email": "elizabeth77@example.net", "first_name": "Jenna", "last_name": "Mcdonald" },
+	{ "username": "stephensonlisa", "email": "brian56@example.net", "first_name": "Sarah", "last_name": "King" },
+	{ "username": "kelly22", "email": "dsmith@example.org", "first_name": "Sherri", "last_name": "Campbell" }
+]
