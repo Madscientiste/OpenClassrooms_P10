@@ -9,19 +9,25 @@ from rest_framework.response import Response
 
 from .models import Project
 from users.models import Contributor, User
+from issues.models import Issue
 
 from .serializers import ProjectSerializer
 from users.serializers import ContributorSerializer, UserSerializer
-
+from issues.serializers import IssueSerializer
+from comments.serializers import CommentSerializer
 
 def mutable_request(func):
+    """Make the request.data mutable"""
+
     def wrapper(*args, **kwargs):
         args[1].data._mutable = True
-        return func(*args, **kwargs) 
-    
+        return func(*args, **kwargs)
+
     return wrapper
 
 
+# /projects/
+# /projects/{project_id}/
 class ProjectViewSet(viewsets.ModelViewSet):
     serializer_class = ProjectSerializer
     permission_classes = [permissions.IsAuthenticated]
@@ -49,7 +55,7 @@ class ContributorViewSet(viewsets.ModelViewSet):
     def get_queryset(self):
         project_id = self.kwargs.get("project_pk", -1)
         project = get_object_or_404(Project, pk=project_id)
-        return Contributor.objects.filter(project=project)
+        return project.contributors.all()
 
     @mutable_request
     def create(self, request, project_pk):
@@ -68,15 +74,37 @@ class ContributorViewSet(viewsets.ModelViewSet):
             return Response({"error": "Contributor not found"}, status=404)
 
 
-# def destroy(self, request, project_pk=None, pk=None):
-#     try:
-#         contributor = Contributor.objects.get(id=pk, project_id=project_pk)
+# /projects/<project_pk>/issues/
+# /projects/<project_pk>/issues/<issue_pk>/
+class IssueViewSet(viewsets.ModelViewSet):
+    serializer_class = IssueSerializer
+    permission_classes = [permissions.IsAuthenticated]
 
-#         if contributor:
-#             contributor.delete()
-#             return Response(status=204)
-#         else:
-#             return Response(status=404)
+    def get_queryset(self):
+        project_id = self.kwargs.get("project_pk", -1)
+        issues = get_object_or_404(Issue, project_id=project_id)
+        return issues.all()
 
-#     except Contributor.DoesNotExist:
-#         return Response({"error": "Contributor not found"}, status=400)
+    @mutable_request
+    def create(self, request, project_pk):
+        request.data.update(project=project_pk, author=request.user.id)
+        return super().create(request)
+
+
+# /projects/<project_pk>/issues/<issue_pk>/comments/
+# /projects/<project_pk>/issues/<issue_pk>/comments/<comment_pk>/
+class CommentViewSet(viewsets.ModelViewSet):
+    serializer_class = CommentSerializer
+    permission_classes = [permissions.IsAuthenticated]
+
+    def get_queryset(self):
+        project_id = self.kwargs.get("project_pk", -1)
+        issue_id = self.kwargs.get("issue_pk", -1)
+
+        comments = get_object_or_404(Issue, project_id=project_id, pk=issue_id)
+        return comments.all()
+
+    @mutable_request
+    def create(self, request, project_pk, issue_pk):
+        request.data.update(project=project_pk, issue=issue_pk, author=request.user.id)
+        return super().create(request)

@@ -5,7 +5,7 @@ from rich.console import Console
 
 from . import __loader
 
-from .__config import BASE_URL, DEFAULT_USER_PASSWORD, FAKE
+from .__config import BASE_URL, DEFAULT_USER_PASSWORD, FAKE, CONSOLE
 from .__functions import get_user, save_json, authenticated_request
 
 
@@ -14,7 +14,6 @@ PROJECT_TYPES = ["IOS", "ANDROID", "FRONT-END", "BACK-END"]
 TEST_ORDER = 2
 
 state = {}
-console = Console()
 
 
 @__loader.register_test(order=1)
@@ -28,11 +27,13 @@ def create_project(*args, **kwargs):
     req = authenticated_request(user, url=URL, data=payload, method="POST")
     project = json.loads(req.text)
 
-    assert req.status_code == 201, "Failed to create project, didn't get 201"
+    assert req.status_code == 201, f"Failed to create project, didn't get 201, got {req.status_code} instead"
     # log("[green]\[success][reset]: Created project", f"{project['title']}")
 
     state["created_project"] = project
     state["used_user"] = user
+
+    return state
 
 
 @__loader.register_test(order=2)
@@ -45,13 +46,14 @@ def get_project(*args, **kwargs):
     req = authenticated_request(user, url=URL + f"{created_project['id']}/", method="GET")
     project = json.loads(req.text)
 
-    assert req.status_code == 200, "Failed to get project, didn't get 200"
+    assert req.status_code == 200, f"Failed to get project, didn't get 200, got {req.status_code} instead"
     assert created_project == project, "Fetched project doesn't match created project"
     # log("[green]\[success][reset]: Got project", f"{project['title']}")
 
     state["got_project"] = project
     state["used_user"] = user
 
+    return state
 
 @__loader.register_test(order=3)
 def edit_created_project(*args, **kwargs):
@@ -64,12 +66,13 @@ def edit_created_project(*args, **kwargs):
     req = authenticated_request(user, url=URL + str(project["id"]) + "/", data=payload, method="PUT")
     project = json.loads(req.text)
 
-    assert req.status_code == 200, "Failed to edit project, didn't get 200"
+    assert req.status_code == 200, f"Failed to edit project, didn't get 200, got {req.status_code} instead"
     # log("[green]\[success][reset]: Edited project with random data", f"{project['title']}")
 
     state["created_project"] = project
     state["used_user"] = user
 
+    return state
 
 @__loader.register_test(order=4)
 def delete_created_project(*args, **kwargs):
@@ -79,5 +82,7 @@ def delete_created_project(*args, **kwargs):
     user = state["used_user"]
 
     req = authenticated_request(user, url=URL + str(project["id"]) + "/", method="DELETE")
-    assert req.status_code == 204, "Failed to delete project, didn't get 204"
+    assert req.status_code == 204, f"Failed to delete project, didn't get 204, got {req.status_code} instead"
     # log("[green]\[success][reset]: Deleted project", f"{project['title']}")
+    
+    return state

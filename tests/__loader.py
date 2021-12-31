@@ -4,9 +4,11 @@
 #
 
 tests = []
+functions = []
+fixtures = []
 
 
-def register_test(order: int = 1):
+def register_test(order: int = 1, fixture: str = None):
     """Test registration decorator
 
     - file order: this is the highest level, for example: a user need to be tested before creating a project for him,
@@ -21,7 +23,27 @@ def register_test(order: int = 1):
 
     def decorator(function):
         priotiy = function.__globals__.get("TEST_ORDER", 0)
-        tests.append((priotiy, order, function))
+        tests.append({"t_order": priotiy, "f_order": order, "function": function, "fixture": fixture})
+        return function
+
+    return decorator
+
+
+def register_function(name: str = None, desc: str = None):
+    """Register a function so they can be called using CLI"""
+
+    def decorator(function):
+        functions.append({"name": name or function.__name__, "desc": desc or function.__doc__, "function": function})
+        return function
+
+    return decorator
+
+
+def register_fixture(name: str = None):
+    """Register a fixture, so we can use it in a test"""
+
+    def decorator(function):
+        fixtures.append({"name": name or function.__name__, "function": function})
         return function
 
     return decorator

@@ -1,13 +1,8 @@
-#
-#
-#
-#
-
 import requests
 import json
 
-from .__config import BASE_URL, JSON_OUTPUT, DEFAULT_USER_PASSWORD, FAKE
-
+from .__config import BASE_URL, JSON_OUTPUT, DEFAULT_USER_PASSWORD, FAKE, CONSOLE
+from . import __loader
 
 # --------------------------------------------------
 #
@@ -23,18 +18,24 @@ def load_json(filename):
         return json.load(f)
 
 
-def fail(message: str):
+def fail(*args, **kwargs):
     """Print a fail message and exit with code 1"""
-    print(message)
+    CONSOLE.log("[red]\[failed][/red]", *args, **kwargs)
     exit(1)
 
 
 # --------------------------------------------------
-# these are for the "initial" setup, however, they can be re-used if needed
+# these are for the "initial" setup, however, they can be used in cli
 
 
-def create_users(amount: int):
+@__loader.register_function("create_users")
+def create_users(*args, **kwargs):
     """Create users and save them to a json file"""
+    amount = int(args[0]) if args else None
+
+    if not amount:
+        fail("not enough arguments")
+
     print(f"Creating {amount} users...")
 
     url = BASE_URL + "/signup/"
@@ -56,6 +57,7 @@ def create_users(amount: int):
     save_json(users, "users.json")
 
 
+@__loader.register_function("login_users")
 def authenticate_users():
     """Authenticate created users, update the json file when done"""
     print("Authenticating users...")
@@ -97,8 +99,10 @@ def gen_random_user() -> dict:
     }
 
 
-def get_user(random_pick: bool = False):
-    """Get the first user from the json file, if random_pick is True, return a random user"""
+def get_user(random_pick: bool = False, rules: dict = None):
+    """Get the first user from the json file, if random_pick is True, return a random user
+    if rules is not None, return a user that matches the rules
+    """
 
     users = load_json("users.json")
     return users[FAKE.random_int(0, len(users) - 1)] if random_pick else users[0]
@@ -122,7 +126,7 @@ def authenticated_request(user: dict, *args, **kwargs):
 
 
 def aquire_user_token(user: dict):
-    """Aquire a user's token, update the json file, return the new user"""
+    """Aquire a user's token, update the json file, return the new user ( basically a login )"""
 
     url = BASE_URL + "/login/"
     pyaload = {"username": user["username"], "password": DEFAULT_USER_PASSWORD}
@@ -144,7 +148,7 @@ def aquire_user_token(user: dict):
 
         return users[idx]
     else:
-        fail(f"Failed to aquire user token, didn't get 200")
+        fail("Failed to aquire user token", response)
 
 
 def refresh_user(user: dict):
@@ -158,7 +162,6 @@ def refresh_user(user: dict):
 
     if req.status_code == 200:
         user["auth"]["access"] = response["access"]
-
         return user
     else:
-        fail(f"Failed to refresh user, didn't get 200")
+        fail("Failed to refresh user token", response)
