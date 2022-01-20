@@ -9,7 +9,7 @@ issue_priority = [
 
 issue_tag = [
     ("BUG", "bug"),
-    ("IMPROVEMENT ", "improvement"),
+    ("IMPROVEMENT", "improvement"),
     ("TASK", "task"),
 ]
 

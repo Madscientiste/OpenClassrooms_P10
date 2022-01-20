@@ -12,6 +12,8 @@ def save_json(data, filename):
     with open(JSON_OUTPUT / filename, "w") as f:
         json.dump(data, f)
 
+    return data
+
 
 def load_json(filename):
     with open(JSON_OUTPUT / filename, "r") as f:
@@ -117,6 +119,8 @@ def authenticated_request(user: dict, *args, **kwargs):
 
     headers = {"Authorization": f"Bearer {user['auth']['access']}"}
     req = requests.request(*args, **kwargs, headers=headers)
+
+    assert not (req.status_code == 500), f"Server error, check logs for more information"
 
     if req.status_code == 401 and not recursing:
         user = refresh_user(user)

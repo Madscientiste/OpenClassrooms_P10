@@ -1,0 +1,30 @@
+{
+	"project": {
+		"title": "Olivia Jackson",
+		"description": "Single growth machine ago his send. Maintain manager not animal. Fact fast prove week store rate. Eat bad stuff American tend federal.",
+		"type": "BACK-END",
+		"id": 3,
+		"author": 1
+	},
+	"issue": {
+		"title": "Angela Serrano",
+		"desc": "According month pull call case. Significant its fast debate Congress single second heavy. Stop movie those wonder whatever hope finally people. Though language time smile by authority agency.",
+		"tag": "IMPROVEMENT",
+		"priority": "HIGH",
+		"status": "TODO",
+		"id": 2,
+		"created_time": "2022-01-07T13:40:57.212854Z",
+		"project": 3,
+		"author": 1
+	},
+	"user": {
+		"username": "gwhite",
+		"email": "brownsuzanne@example.org",
+		"first_name": "Nathan",
+		"last_name": "Spencer",
+		"auth": {
+			"refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY0MTY0OTIzOSwiaWF0IjoxNjQxNTYyODM5LCJqdGkiOiIyMmFhZDBhMDViNWI0M2EzOTM2YTY2YjJjNTA5NGE4ZCIsInVzZXJfaWQiOjF9.Ks4Ki3IkVp1nrywdwV13UFfEncYVlRP7KLI2RYaHEhM",
+			"access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQxNTYzMTM5LCJpYXQiOjE2NDE1NjI4MzksImp0aSI6ImZiM2QwN2JlNjc1MjRlM2Y5ZGY3YmRlMjJhMGUzNzA5IiwidXNlcl9pZCI6MX0.3Y6w5hw46YO4xabWo5U-fnRmaCueNpwTIwdLsAOMEH8"
+		}
+	}
+}

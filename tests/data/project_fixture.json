@@ -1,0 +1,19 @@
+{
+	"project": {
+		"title": "George Cameron",
+		"description": "Long difficult memory after. Find discussion low manage easy strategy. Group reveal chair until move.\nChoice whose book late make major or. Accept affect article television reach.",
+		"type": "FRONT-END",
+		"id": 2,
+		"author": 1
+	},
+	"user": {
+		"username": "gwhite",
+		"email": "brownsuzanne@example.org",
+		"first_name": "Nathan",
+		"last_name": "Spencer",
+		"auth": {
+			"refresh": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoicmVmcmVzaCIsImV4cCI6MTY0MTY0OTIzOSwiaWF0IjoxNjQxNTYyODM5LCJqdGkiOiIyMmFhZDBhMDViNWI0M2EzOTM2YTY2YjJjNTA5NGE4ZCIsInVzZXJfaWQiOjF9.Ks4Ki3IkVp1nrywdwV13UFfEncYVlRP7KLI2RYaHEhM",
+			"access": "eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNjQxNTYzMTM5LCJpYXQiOjE2NDE1NjI4MzksImp0aSI6ImZiM2QwN2JlNjc1MjRlM2Y5ZGY3YmRlMjJhMGUzNzA5IiwidXNlcl9pZCI6MX0.3Y6w5hw46YO4xabWo5U-fnRmaCueNpwTIwdLsAOMEH8"
+		}
+	}
+}

@@ -6,7 +6,7 @@ from .__functions import authenticated_request, get_user, save_json, load_json
 from .__config import BASE_URL, FAKE
 
 
-@__loader.register_fixure("project_fixture")
+@__loader.register_fixture("project_fixture")
 def project_fixture() -> dict:
     """Create a project, and return it"""
 
@@ -18,20 +18,24 @@ def project_fixture() -> dict:
         "type": FAKE.random_element(PROJECT_TYPES),
     }
 
-    user = get_user()
+    try:
+        return load_json("project_fixture.json")
 
-    url = BASE_URL + "/projects/"
-    project_req = authenticated_request(user, url=url, data=project, method="POST")
-    project_json = json.loads(project_req.text)
-    project.update(project_json)
+    except FileNotFoundError:
+        user = get_user()
 
-    assert project_req.status_code == 201
-    assert project.get("id") is not None
+        url = BASE_URL + "/projects/"
+        project_req = authenticated_request(user, url=url, data=project, method="POST")
+        project_json = json.loads(project_req.text)
+        project.update(project_json)
 
-    return {"project": project, "user": user}
+        assert project_req.status_code == 201
+        assert project.get("id") is not None
+
+        return save_json({"project": project, "user": user}, "project_fixture.json")
 
 
-@__loader.register_fixure("issue_fixture")
+@__loader.register_fixture("issue_fixture")
 def issue_fixture() -> dict:
     """Create an issue, and return it"""
 
@@ -51,23 +55,27 @@ def issue_fixture() -> dict:
         "priority": FAKE.random_element(ISSUE_PRIORITY),
         "status": FAKE.random_element(ISSUE_STATUS),
     }
+    
+    try:
+        return load_json("issue_fixture.json")
 
-    user = get_user()
+    except FileNotFoundError:
+        user = get_user()
 
-    url = BASE_URL + "/projects/"
-    project_req = authenticated_request(user, url=url, data=project, method="POST")
-    project_json = json.loads(project_req.text)
-    project.update(project_json)
+        url = BASE_URL + "/projects/"
+        project_req = authenticated_request(user, url=url, data=project, method="POST")
+        project_json = json.loads(project_req.text)
+        project.update(project_json)
 
-    assert project_req.status_code == 201
-    assert project.get("id") is not None
+        assert project_req.status_code == 201
+        assert project.get("id") is not None
 
-    url = BASE_URL + f"/projects/{project['id']}/issues/"
-    issue_req = authenticated_request(user, url=url, data=issue, method="POST")
-    issue_json = json.loads(issue_req.text)
-    issue.update(issue_json)
+        url = BASE_URL + f"/projects/{project['id']}/issues/"
+        issue_req = authenticated_request(user, url=url, data=issue, method="POST")
+        issue_json = json.loads(issue_req.text)
+        issue.update(issue_json)
 
-    assert issue_req.status_code == 201
-    assert issue.get("id") is not None
+        assert issue_req.status_code == 201
+        assert issue.get("id") is not None
 
-    project["issue"] = issue
+        return save_json({"project": project, "issue": issue, "user": user}, "issue_fixture.json")

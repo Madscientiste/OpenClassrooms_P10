@@ -16,28 +16,28 @@ class UserSerializer(serializers.HyperlinkedModelSerializer):
         extra_kwargs = {"password": {"write_only": True}}
 
 
-class ContributorSerializer(serializers.HyperlinkedModelSerializer):
-    user = serializers.PrimaryKeyRelatedField(read_only=True)
+class ContributorSerializer(serializers.ModelSerializer):
+    user = serializers.PrimaryKeyRelatedField(queryset=User.objects.all(), default=None)
     username = serializers.CharField(write_only=True)
     project = serializers.PrimaryKeyRelatedField(queryset=Project.objects.all(), write_only=True, required=True)
-    permission = PermissionField(required=True)
+    # permission = PermissionField()
 
     class Meta:
         model = Contributor
-        fields = ("id", "user", "username", "project", "permission")
-
-        validators = [
-            serializers.UniqueTogetherValidator(
-                queryset=model.objects.all(), fields=("user", "project"), message="Contributor already added"
-            )
-        ]
+        fields = "__all__"
 
     def validate_user(self, attrs):
-        data = super().is_valid(attrs)
+        username = self.initial_data["username"]
 
-        username = data.pop("username")
-        data["user"] = User.objects.get(username=username)
+        try:
+            return User.objects.get(username=username)
+        except User.DoesNotExist:
+            raise serializers.ValidationError("User does not exist")
 
-        return data
-    
-    
+    def create(self, validated_data):
+        validated_data.pop("username")
+
+        if validated_data["user"] == self.context["request"].user:
+            raise serializers.ValidationError("You cannot add yourself as a contributor")
+
+        return super().create(validated_data)

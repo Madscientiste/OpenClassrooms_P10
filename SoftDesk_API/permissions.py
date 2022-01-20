@@ -1,6 +1,9 @@
 from django.core.exceptions import ValidationError
 from django.utils.translation import gettext_lazy as _
+
 from rest_framework.fields import Field
+from rest_framework import permissions
+
 
 # fmt: off
 CREATE = 1 << 1  # 2
@@ -17,25 +20,66 @@ PERMISSIONS = {
     "delete": DELETE,
 }
 
+REQUEST_PERMISSIONS = {
+    "GET"  : READ,
+    "POST" : CREATE,
+    "PUT"  : UPDATE,
+    "PATCH": UPDATE,
+    "DELETE": DELETE,
+}
+
+
 # fmt: on
-class Permissions:
-    def __init__(self, value: int):
-        self.value = int(value)
+def permission_is_valid(value) -> bool:
+    value = int(value)
 
-    def __repr__(self):
-        return f"Permissions({self.value})"
+    valid_perm = any([not not (value & perm) for perm in PERMISSIONS.values()])
+    is_even = value % 2 == 0
 
-    def has_permission(self, name: str) -> bool:
-        permission = PERMISSIONS[name]
-        return self.value & permission == permission
+    # is the permission within the valid range, even number, and a valid permmision ?
+    return value <= ALL and is_even and valid_perm
 
-    @property
-    def is_valid(self) -> bool:
-        valid_perm = any([not not (self.value & perm) for perm in PERMISSIONS.values()])
-        is_even = self.value % 2 == 0
 
-        # is the value within the valid range, even and a valid permmision ?
-        return self.value <= ALL and is_even and valid_perm
+# Django class permissions
+class ValidateProjectPermissions(permissions.BasePermission):
+    message = "Not allowed to perform this action."
+
+    def has_permission(self, request, view):
+        return super().has_permission(request, view)
+
+    def has_object_permission(self, request, view, obj) -> bool:
+        is_author = obj.author == request.user
+        is_contributor = request.user in obj.contributors.all()
+
+        # Author can perform any action on the project
+        # Contributor can only perform read actions on the project
+
+        if is_author:
+            return True
+
+        if is_contributor:
+            return request.method in ["GET", "HEAD"]
+
+        # has_permission = False
+        # req_permission = REQUEST_PERMISSIONS[request.method]
+
+        # if is_contributor:
+        #     contributor_obj = obj.contributors.get(user=request.user)
+        #     has_permission = contributor_obj.permission & req_permission
+
+        # return is_author or has_permission
+
+
+class ValidateContributorPermissions(permissions.BasePermission):
+    pass
+
+
+class ValidateIssuePermissions(permissions.BasePermission):
+    pass
+
+
+class ValidateCommentPermissions(permissions.BasePermission):
+    pass
 
 
 # serializer field
@@ -48,7 +92,7 @@ class PermissionField(Field):
         super().__init__(**kwargs)
 
     def to_internal_value(self, data):
-        if Permissions(data).is_valid:
+        if permission_is_valid(data):
             return int(data)
         else:
             self.fail("invalid")
@@ -61,5 +105,5 @@ def validate_permissions(value: int) -> bool:
     if not isinstance(value, int):
         raise ValidationError(_("Permission must be an integer"))
 
-    if not Permissions(value).is_valid:
+    if not permission_is_valid(value):
         raise ValidationError(_("%(value)s is not a valid permission"), params={"value": value})
