@@ -37,7 +37,10 @@ class ContributorSerializer(serializers.ModelSerializer):
     def create(self, validated_data):
         validated_data.pop("username")
 
-        if validated_data["user"] == self.context["request"].user:
-            raise serializers.ValidationError("You cannot add yourself as a contributor")
+        # can't add the author of a project as a contributor
+        project = validated_data.get("project")
+
+        if project.author == validated_data["user"]:
+            raise serializers.ValidationError({"detail": "Can't add the author of a project as a contributor"})
 
         return super().create(validated_data)

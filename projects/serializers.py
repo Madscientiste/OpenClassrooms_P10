@@ -13,3 +13,8 @@ class ProjectSerializer(serializers.ModelSerializer):
             "description": {"required": False},
             "type": {"required": False},
         }
+
+    # author is only here to be able to create a project
+    def create(self, validated_data):
+        user = self.context["request"].user
+        return Project.objects.create(author=user, **validated_data)

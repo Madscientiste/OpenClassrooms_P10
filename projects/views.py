@@ -1,7 +1,6 @@
 from django.core.exceptions import ObjectDoesNotExist
 from django.db.models import Q
 from django.db.models.base import Model
-from django.shortcuts import get_object_or_404 as _get_object_or_404
 
 from rest_framework import viewsets, permissions
 from rest_framework.generics import get_object_or_404
