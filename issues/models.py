@@ -7,11 +7,13 @@ issue_priority = [
     ("HIGH", "high"),
 ]
 
+
 issue_tag = [
     ("BUG", "bug"),
     ("IMPROVEMENT", "improvement"),
     ("TASK", "task"),
 ]
+
 
 issue_status = [
     ("TODO", "todo"),
@@ -22,7 +24,7 @@ issue_status = [
 
 class Issue(models.Model):
     title = models.CharField(max_length=128)
-    desc = models.CharField(max_length=2024)
+    description = models.CharField(max_length=2024)
     tag = models.CharField(max_length=128, choices=issue_tag)
     priority = models.CharField(max_length=128, choices=issue_priority)
     status = models.CharField(max_length=128, choices=issue_status)

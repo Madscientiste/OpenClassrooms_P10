@@ -8,7 +8,11 @@ def mutable_request(func):
     """Make the request.data mutable"""
 
     def wrapper(*args, **kwargs):
-        args[1].data._mutable = True
+        can_mutate = getattr(args[1].data, "_mutable", True)
+
+        if not can_mutate:
+            setattr(args[1].data, "_mutable", True)
+
         return func(*args, **kwargs)
 
     return wrapper

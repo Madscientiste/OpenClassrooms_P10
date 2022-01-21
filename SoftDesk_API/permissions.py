@@ -80,10 +80,10 @@ class ValidateContributorPermissions(permissions.BasePermission, defaultPermissi
     def has_permission(self, request, view):
         project = self.get_project(view.kwargs["project_pk"])
 
-        is_author = project.author == request.user
+        is_project_author = project.author == request.user
         is_contributor = request.user in project.contributors.all()
 
-        return is_author or (is_contributor and request.method == "GET")
+        return is_project_author or (is_contributor and request.method == "GET")
 
     def has_object_permission(self, request, view, obj) -> bool:
         is_author = obj.project.author == request.user
@@ -93,7 +93,18 @@ class ValidateContributorPermissions(permissions.BasePermission, defaultPermissi
 
 
 class ValidateIssuePermissions(permissions.BasePermission, defaultPermissionMessage):
-    pass
+    def has_permission(self, request, view):
+
+        if request.method == ["GET", "POST"]:
+            project = self.get_project(view.kwargs["project_pk"])
+            is_project_author = project.author == request.user
+            is_contributor = request.user in project.contributors.all()
+            return is_project_author or is_contributor
+
+        return True
+
+    def has_object_permission(self, request, view, obj) -> bool:
+        return obj.author == request.user
 
 
 class ValidateCommentPermissions(permissions.BasePermission, defaultPermissionMessage):
