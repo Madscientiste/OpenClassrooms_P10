@@ -9,42 +9,6 @@ from projects.models import Project
 from issues.models import Issue
 from comments.models import Comment
 
-# fmt: off
-CREATE = 1 << 1  # 2
-READ   = 1 << 2  # 4
-UPDATE = 1 << 3  # 8
-DELETE = 1 << 4  # 16
-EDIT_PROJECT = 1 << 5 # 32
-
-
-ALL = CREATE | READ | UPDATE | DELETE
-
-PERMISSIONS = {
-    "create": CREATE,
-    "read"  : READ,
-    "update": UPDATE,
-    "delete": DELETE,
-}
-
-REQUEST_PERMISSIONS = {
-    "GET"  : READ,
-    "POST" : CREATE,
-    "PUT"  : UPDATE,
-    "PATCH": UPDATE,
-    "DELETE": DELETE,
-}
-
-
-# fmt: on
-def permission_is_valid(value) -> bool:
-    value = int(value)
-
-    valid_perm = any([not not (value & perm) for perm in PERMISSIONS.values()])
-    is_even = value % 2 == 0
-
-    # is the permission within the valid range, even number, and a valid permmision ?
-    return value <= ALL and is_even and valid_perm
-
 
 class defaultPermissionMessage:
     message = "You don't have permission to perform this action."
@@ -121,30 +85,3 @@ class ValidateIssuePermissions(permissions.BasePermission, defaultPermissionMess
 
 class ValidateCommentPermissions(permissions.BasePermission, defaultPermissionMessage):
     pass
-
-
-# serializer field
-class PermissionField(Field):
-    default_error_messages = {
-        "invalid": _("This permission is invalid."),
-    }
-
-    def __init__(self, **kwargs):
-        super().__init__(**kwargs)
-
-    def to_internal_value(self, data):
-        if permission_is_valid(data):
-            return int(data)
-        else:
-            self.fail("invalid")
-
-    def to_representation(self, value):
-        return int(value)
-
-
-def validate_permissions(value: int) -> bool:
-    if not isinstance(value, int):
-        raise ValidationError(_("Permission must be an integer"))
-
-    if not permission_is_valid(value):
-        raise ValidationError(_("%(value)s is not a valid permission"), params={"value": value})
