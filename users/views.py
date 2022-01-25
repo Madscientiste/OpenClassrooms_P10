@@ -1,5 +1,5 @@
-from rest_framework import viewsets, permissions
 from rest_framework.exceptions import ValidationError
+from rest_framework import viewsets, permissions
 
 from .models import Contributor
 from projects.models import Project

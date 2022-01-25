@@ -1,4 +1,4 @@
-from django.forms import ValidationError
+from rest_framework.exceptions import ValidationError
 from rest_framework import viewsets, permissions
 from rest_framework.generics import get_object_or_404
 
@@ -23,8 +23,15 @@ class IssueViewSet(viewsets.ModelViewSet):
         if not project_pk.isdigit():
             raise ValidationError({"detail": "Invalid project_pk"})
 
-        project = Project.objects.get(pk=project_pk)
-        return Issue.objects.filter(project=project)
+        try:
+            project = Project.objects.get(pk=project_pk)
+        except Project.DoesNotExist:
+            raise ValidationError({"detail": "Project does not exist"})
+
+        try:
+            return Issue.objects.filter(project=project)
+        except Issue.DoesNotExist:
+            raise ValidationError({"detail": "Issue does not exist"})
 
     @mutable_request
     def create(self, request, project_pk):

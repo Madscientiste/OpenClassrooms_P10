@@ -1,6 +1,6 @@
-from django.core.exceptions import ValidationError
-from django.utils.translation import gettext_lazy as _
+from rest_framework.exceptions import ValidationError
 
+from django.utils.translation import gettext_lazy as _
 from rest_framework.fields import Field
 from rest_framework import permissions
 
@@ -50,16 +50,28 @@ class defaultPermissionMessage:
     message = "You don't have permission to perform this action."
 
     def get_project(self, project_pk) -> Project:
-        return Project.objects.get(pk=project_pk)
+        try:
+            return Project.objects.get(pk=project_pk)
+        except Project.DoesNotExist:
+            raise ValidationError({"detail": "Project does not exist"})
 
     def get_contributor(self, user_pk) -> Contributor:
-        return Contributor.objects.get(pk=user_pk)
+        try:
+            return Contributor.objects.get(pk=user_pk)
+        except Contributor.DoesNotExist:
+            raise ValidationError({"detail": "Contributor does not exist"})
 
     def get_issue(self, issue_pk) -> Issue:
-        return Issue.objects.get(pk=issue_pk)
+        try:
+            return Issue.objects.get(pk=issue_pk)
+        except Issue.DoesNotExist:
+            raise ValidationError({"detail": "Issue does not exist"})
 
     def get_comment(self, comment_pk) -> Comment:
-        return Comment.objects.get(pk=comment_pk)
+        try:
+            return Comment.objects.get(pk=comment_pk)
+        except Comment.DoesNotExist:
+            raise ValidationError({"detail": "Comment does not exist"})
 
 
 # Django class permissions
