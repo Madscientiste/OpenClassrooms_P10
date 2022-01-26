@@ -14,10 +14,31 @@ class defaultPermissionMessage:
     message = "You don't have permission to perform this action."
 
     def can_read(self, request, view):
+        """Check if the user has access to the object
+
+        Only a Contributor or a Project owner can read the object and its underlying.
+        """
+        allowed_methods = ["GET", "POST"]
         project = self.get_project(view.kwargs["project_pk"])
+
         is_project_author = project.author == request.user
         is_contributor = request.user in project.contributors.all()
-        return is_project_author or (is_contributor and request.method == "GET")
+
+        return is_project_author or is_contributor
+
+    def can_write(self, request, obj):
+        """Check if the user is an author of an object
+
+        Only the author of an object can update it or delete it.
+
+        -> GET request returns True by default
+        """
+        if request.method in ["PUT", "DELETE"]:
+            return obj.author == request.user
+        elif request.method == "GET":
+            return True
+        else:
+            return False
 
     def get_project(self, project_pk) -> Project:
         try:
@@ -52,7 +73,6 @@ class ValidateProjectPermissions(permissions.BasePermission, defaultPermissionMe
     def has_object_permission(self, request, view, obj) -> bool:
         is_author = obj.author == request.user
         is_contributor = request.user in obj.contributors.all()
-
         return is_author or (is_contributor and request.method == "GET")
 
 
@@ -63,7 +83,7 @@ class ValidateContributorPermissions(permissions.BasePermission, defaultPermissi
         return self.can_read(request, view)
 
     def has_object_permission(self, request, view, obj) -> bool:
-        return obj.author == request.user
+        return self.can_write(request, obj)
 
 
 class ValidateIssuePermissions(permissions.BasePermission, defaultPermissionMessage):
@@ -71,7 +91,7 @@ class ValidateIssuePermissions(permissions.BasePermission, defaultPermissionMess
         return self.can_read(request, view)
 
     def has_object_permission(self, request, view, obj) -> bool:
-        return obj.author == request.user
+        return self.can_write(request, obj)
 
 
 class ValidateCommentPermissions(permissions.BasePermission, defaultPermissionMessage):
@@ -79,4 +99,4 @@ class ValidateCommentPermissions(permissions.BasePermission, defaultPermissionMe
         return self.can_read(request, view)
 
     def has_object_permission(self, request, view, obj):
-        return obj.author == request.user
+        return self.can_write(request, obj)

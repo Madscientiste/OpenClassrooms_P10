@@ -37,9 +37,13 @@ class CommentViewSet(viewsets.ModelViewSet):
             raise ValidationError({"detail": "Issue does not exist"})
 
         return Comment.objects.filter(issue=issue)
-        # return Issue.objects.get(pk=issue_pk, project=project)
 
     @mutable_request
-    def create(self, request, project_pk, issue_pk):
+    def create(self, request, project_pk, issue_pk, *args, **kwargs):
         request.data.update(project=project_pk, issue=issue_pk, author=request.user.id)
-        return super().create(request)
+        return super().create(request, *args, **kwargs)
+
+    @mutable_request
+    def update(self, request, project_pk, issue_pk, *args, **kwargs):
+        request.data.update(project=project_pk, issue=issue_pk, author=request.user.id)
+        return super().update(request, *args, **kwargs)
