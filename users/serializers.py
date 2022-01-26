@@ -2,7 +2,6 @@ from django.db.models.query import QuerySet
 from rest_framework import serializers
 from rest_framework_nested.serializers import NestedHyperlinkedModelSerializer
 
-from SoftDesk_API.permissions import PermissionField
 from projects.serializers import ProjectSerializer
 from projects.models import Project
 

@@ -13,6 +13,12 @@ from comments.models import Comment
 class defaultPermissionMessage:
     message = "You don't have permission to perform this action."
 
+    def can_read(self, request, view):
+        project = self.get_project(view.kwargs["project_pk"])
+        is_project_author = project.author == request.user
+        is_contributor = request.user in project.contributors.all()
+        return is_project_author or (is_contributor and request.method == "GET")
+
     def get_project(self, project_pk) -> Project:
         try:
             return Project.objects.get(pk=project_pk)
@@ -54,34 +60,23 @@ class ValidateContributorPermissions(permissions.BasePermission, defaultPermissi
     # Author can perform any action on the project
     # Contributor can only perform read actions on the project if he is a contributor
     def has_permission(self, request, view):
-        project = self.get_project(view.kwargs["project_pk"])
-
-        is_project_author = project.author == request.user
-        is_contributor = request.user in project.contributors.all()
-
-        return is_project_author or (is_contributor and request.method == "GET")
+        return self.can_read(request, view)
 
     def has_object_permission(self, request, view, obj) -> bool:
-        is_author = obj.project.author == request.user
-        is_contributor = request.user in obj.project.contributors.all()
-
-        return is_author or (is_contributor and request.method == "GET")
+        return obj.author == request.user
 
 
 class ValidateIssuePermissions(permissions.BasePermission, defaultPermissionMessage):
     def has_permission(self, request, view):
-
-        if request.method == ["GET", "POST"]:
-            project = self.get_project(view.kwargs["project_pk"])
-            is_project_author = project.author == request.user
-            is_contributor = request.user in project.contributors.all()
-            return is_project_author or is_contributor
-
-        return True
+        return self.can_read(request, view)
 
     def has_object_permission(self, request, view, obj) -> bool:
         return obj.author == request.user
 
 
 class ValidateCommentPermissions(permissions.BasePermission, defaultPermissionMessage):
-    pass
+    def has_permission(self, request, view):
+        return self.can_read(request, view)
+
+    def has_object_permission(self, request, view, obj):
+        return obj.author == request.user

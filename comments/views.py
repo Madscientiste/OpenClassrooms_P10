@@ -14,7 +14,7 @@ from .models import Comment
 # /projects/<project_pk>/issues/<issue_pk>/comments/<comment_pk>/
 class CommentViewSet(viewsets.ModelViewSet):
     serializer_class = CommentSerializer
-    permission_classes = [permissions.IsAuthenticated]
+    permission_classes = [permissions.IsAuthenticated, ValidateCommentPermissions]
 
     def get_queryset(self):
         project_pk = self.kwargs.get("project_pk", -1)
