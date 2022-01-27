@@ -14,3 +14,5 @@ class Contributor(models.Model):
 
 class User(AbstractUser):
     projects = models.ManyToManyField("projects.Project", through="Contributor")
+
+

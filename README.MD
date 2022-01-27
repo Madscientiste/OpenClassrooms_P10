@@ -2,7 +2,11 @@
 
 > NOTE : `Python 3.9.9` & `Windows 11 21H2` was used while working on this project.
 
-> NOTE : You will find the API documentation [right here](https://www.postman.com/phonemicrowave/workspace/softdesk-api/api/668c0f9e-dc09-4c2d-a81e-b03077f93630/version/6588de8a-93c1-445c-8d24-bb6c7fa18779)
+> NOTE : You will find the full API documentation [right here](https://www.postman.com/phonemicrowave/workspace/softdesk-api/api/668c0f9e-dc09-4c2d-a81e-b03077f93630/version/6588de8a-93c1-445c-8d24-bb6c7fa18779).
+
+For each collection:
+[User API](https://documenter.getpostman.com/view/7297696/UVeAw9GE)
+[Project API](https://documenter.getpostman.com/view/7297696/UVXokDfF)
 
 ## Installation
 
